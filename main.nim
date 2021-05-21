@@ -2,12 +2,13 @@ import std/httpclient
 import json
 import uri
 import strformat
+import tables, hashes
 from strutils import parseInt
-from times import parse, DateTime, format, TimeFormatParseError, initDateTime
+from times import parse, DateTime, format, initDateTime
 
 
 type 
-    Subject = object
+    Subject* = object
         date: DateTime
         week_number: int
         week_day: string
@@ -46,7 +47,7 @@ proc `$`*(s: Subject): string=
     return new_s
 
 
-func remove_extra_spaces(s:string): string =
+func remove_extra_spaces*(s:string): string =
     ##[
         Usefull for deleting extra spaces that goes one after another
         returns string without extra spaces
@@ -67,6 +68,16 @@ func remove_extra_spaces(s:string): string =
             new_s.add character
     return new_s
 
+
+proc hash(v: DateTime): Hash =
+    result = `$`(v).hash
+
+
+func grouping_by_days*(subjects: seq[Subject]): Table[DateTime, seq[Subject]]=
+    var subjects_grouped_by_days = initTable[DateTime, seq[Subject]]()
+    for subject in subjects:
+        if subjects_grouped_by_days.hasKeyOrPut(subject.date, newSeq[Subject]()):
+            subjects_grouped_by_days[subject.date].add(subject)
 
 proc json_to_subject(json_subjects:JsonNode): seq[Subject] =
     var return_result = newSeqOfCap[Subject](json_subjects.len) 
@@ -98,5 +109,8 @@ proc main()=
     for subject in subjects:
         echo $subject
 
+    echo subjects.grouping_by_days().len()
+    
+    
 if isMainModule:
     main()

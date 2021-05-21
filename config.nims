@@ -2,6 +2,9 @@ import strutils
 import strformat
 
 
+hint("Conf", false)
+
+
 let postfix = if defined(release): "release" else: "debug"
 
 let

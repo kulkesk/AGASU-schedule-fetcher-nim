@@ -1,7 +1,7 @@
 
 # import strutils
 # import system
-import system.nimscript
+# import system.nimscript
 
 switch "define", "ssl"
 

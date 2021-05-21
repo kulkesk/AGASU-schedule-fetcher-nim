@@ -10,10 +10,10 @@ let
     cache = @[project_directory, "/cache/", projectName(), "_", postfix, "/"].join()
     source = @[project_directory, "/src/main.nim"].join()
 
-if buildOS == "android":
-    switch "define", "nimDisableCertificateValidation"
 
-task buildr, "builds release binary":
+task build, "builds binary":
+    if buildOS == "android":
+        switch "define", "nimDisableCertificateValidation"
     setCommand "c"
     switch "define", "ssl"
     switch "o", target

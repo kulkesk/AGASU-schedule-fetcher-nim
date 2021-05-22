@@ -157,6 +157,8 @@ proc main()=
         # echo $subject
 
     subjects.grouping_subjects_by_days().print_schedule
+    echo "Нажми enter что бы закрыть окно"
+    discard readLine(stdin)
     
     
 if isMainModule:

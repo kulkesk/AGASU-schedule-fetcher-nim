@@ -78,6 +78,9 @@ func hash*(v: DateTime): Hash =
 
 
 func grouping_subjects_by_days*(subjects: seq[Subject]): Table[DateTime, seq[Subject]]=
+    ##[
+        Groups subjects by their respective days, as they should be send to begin with
+    ]##
     var subjects_grouped_by_days  = initTable[DateTime, seq[Subject]]()
     for subject in subjects:
         if subjects_grouped_by_days.hasKey(subject.date):
@@ -87,7 +90,10 @@ func grouping_subjects_by_days*(subjects: seq[Subject]): Table[DateTime, seq[Sub
     return subjects_grouped_by_days
 
 
-proc print_schedule(schedule:Table[DateTime, seq[Subject]])=
+proc print_schedule*(schedule:Table[DateTime, seq[Subject]])=
+    ##[
+        Prints schedule in human readable form
+    ]##
     var sep_between_days = "="
     var sep_between_subjs = "-"
     var lenght: int = 1
@@ -117,7 +123,10 @@ proc print_schedule(schedule:Table[DateTime, seq[Subject]])=
         echo sep_between_subjs
 
 
-proc json_to_subject(json_subjects:JsonNode): seq[Subject] =
+proc json_to_subject*(json_subjects:JsonNode): seq[Subject] =
+    ##[
+        magically turn json response from server to a normal list of objects that represents data
+    ]##
     var return_result = newSeqOfCap[Subject](json_subjects.len) 
     for json_subject in json_subjects:
         var subject = Subject()

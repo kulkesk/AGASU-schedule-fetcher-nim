@@ -3,7 +3,8 @@ import json
 import uri
 import strformat
 import tables, hashes
-from strutils import parseInt
+from strutils import parseInt, repeat
+from unicode import runeLen
 from times import parse, DateTime, format, initDateTime
 
 
@@ -87,9 +88,33 @@ func grouping_subjects_by_days*(subjects: seq[Subject]): Table[DateTime, seq[Sub
 
 
 proc print_schedule(schedule:Table[DateTime, seq[Subject]])=
+    var sep_between_days = "="
+    var sep_between_subjs = "-"
+    var lenght: int = 1
     for date, subjs in schedule:
          for subj in subjs:
-            echo subj
+            lenght = max(subj.subject.runeLen()+3, lenght)
+            lenght = max(subj.classroom.runeLen(), lenght)
+            lenght = max(subj.classroom_building.runeLen(), lenght)
+            lenght = max(subj.prim.runeLen(), lenght)
+            lenght = max(subj.study_type.runeLen(), lenght)
+            lenght = max(subj.group_name.runeLen(), lenght)
+            lenght = max(subj.signature.runeLen(), lenght)
+    sep_between_days = sep_between_days.repeat(lenght)
+    sep_between_subjs = sep_between_subjs.repeat(lenght)
+    for date, subjs in schedule:
+        echo sep_between_days
+        for subj in subjs:
+            echo sep_between_subjs
+            echo fmt"{subj.pair}){subj.subject}"
+            echo "  ", subj.study_type
+            echo subj.signature
+            if subj.prim.len() > 0:
+                echo subj.prim
+            if subj.sub_group.len() > 0:
+                echo "подгруппа: ", subj.sub_group
+            echo subj.classroom, ' ', subj.classroom_building
+        echo sep_between_subjs
 
 
 proc json_to_subject(json_subjects:JsonNode): seq[Subject] =

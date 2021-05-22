@@ -22,6 +22,8 @@ type
         study_type: string
         group_name: string
 
+    # Schedule* = Table[DateTime, seq[Subject]]
+
  
 proc `$`*(s: Subject): string=
     var new_s = ""
@@ -69,15 +71,26 @@ func remove_extra_spaces*(s:string): string =
     return new_s
 
 
-proc hash(v: DateTime): Hash =
+func hash*(v: DateTime): Hash =
     result = `$`(v).hash
+    # debugEcho result
 
 
-func grouping_by_days*(subjects: seq[Subject]): Table[DateTime, seq[Subject]]=
-    var subjects_grouped_by_days = initTable[DateTime, seq[Subject]]()
+func grouping_subjects_by_days*(subjects: seq[Subject]): Table[DateTime, seq[Subject]]=
+    var subjects_grouped_by_days  = initTable[DateTime, seq[Subject]]()
     for subject in subjects:
-        if subjects_grouped_by_days.hasKeyOrPut(subject.date, newSeq[Subject]()):
+        if subjects_grouped_by_days.hasKey(subject.date):
             subjects_grouped_by_days[subject.date].add(subject)
+        else:
+            subjects_grouped_by_days[subject.date] = @[subject]
+    return subjects_grouped_by_days
+
+
+proc print_schedule(schedule:Table[DateTime, seq[Subject]])=
+    for date, subjs in schedule:
+         for subj in subjs:
+            echo subj
+
 
 proc json_to_subject(json_subjects:JsonNode): seq[Subject] =
     var return_result = newSeqOfCap[Subject](json_subjects.len) 
@@ -106,10 +119,10 @@ proc main()=
     var url = parseUri("https://api.xn--80aai1dk.xn--p1ai/api/") / "schedule" ?
                         {"range": "3", "subdivision_cod": "2", "group_name": "4562"}
     var subjects = client.getContent($url).parseJson().json_to_subject()
-    for subject in subjects:
-        echo $subject
+    # for subject in subjects:
+        # echo $subject
 
-    echo subjects.grouping_by_days().len()
+    subjects.grouping_subjects_by_days().print_schedule
     
     
 if isMainModule:

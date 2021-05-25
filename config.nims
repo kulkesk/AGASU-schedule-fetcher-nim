@@ -23,6 +23,7 @@ task build, "builds binary":
     switch "define", "ssl"
     switch "o", target
     switch "nimcache", cache
+    switch "gc", "arc"
 
 task clean_cache, "cleans cache":
     hint("Conf", false)

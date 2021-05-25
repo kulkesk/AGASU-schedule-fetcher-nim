@@ -3,9 +3,9 @@ import json
 import uri
 import strformat
 import tables, hashes
-from strutils import parseInt, repeat
+from strutils import parseInt, repeat, center
 from unicode import runeLen
-from times import parse, DateTime, format, initDateTime
+from times import parse, DateTime, format, initDateTime, WeekDay, getDayOfWeek
 
 
 type 
@@ -94,9 +94,11 @@ proc print_schedule*(schedule:Table[DateTime, seq[Subject]])=
     ##[
         Prints schedule in human readable form
     ]##
+
     var sep_between_days = "="
     var sep_between_subjs = "-"
     var lenght: int = 1
+
     for date, subjs in schedule:
          for subj in subjs:
             lenght = max(subj.subject.runeLen()+3, lenght)
@@ -106,10 +108,32 @@ proc print_schedule*(schedule:Table[DateTime, seq[Subject]])=
             lenght = max(subj.study_type.runeLen(), lenght)
             lenght = max(subj.group_name.runeLen(), lenght)
             lenght = max(subj.signature.runeLen(), lenght)
+
     sep_between_days = sep_between_days.repeat(lenght)
     sep_between_subjs = sep_between_subjs.repeat(lenght)
+
     for date, subjs in schedule:
         echo sep_between_days
+        var weekday_rus: string
+        case getDayOfWeek(subjs[0].date.monthdayZero, subjs[0].date.monthZero, subjs[0].date.year)
+        of WeekDay.dMon:
+            weekday_rus = "Понедельник"
+        of WeekDay.dTue:
+            weekday_rus = "Вторник"
+        of WeekDay.dWed:
+            weekday_rus = "Среда"
+        of WeekDay.dThu:
+            weekday_rus = "Четверк"
+        of WeekDay.dFri:
+            weekday_rus = "Пятница"
+        of WeekDay.dSat:
+            weekday_rus = "Суббота"
+        of WeekDay.dSun:
+            weekday_rus = "Воскресенье"
+
+        weekday_rus = weekday_rus.center(lenght)
+        echo weekday_rus
+        
         for subj in subjs:
             echo sep_between_subjs
             echo fmt"{subj.pair}){subj.subject}"
@@ -145,7 +169,6 @@ proc json_to_subject*(json_subjects:JsonNode): seq[Subject] =
 
         return_result.add(subject)
     return return_result
-    
 
 
 proc main()=
@@ -153,10 +176,8 @@ proc main()=
     var url = parseUri("https://api.xn--80aai1dk.xn--p1ai/api/") / "schedule" ?
                         {"range": "3", "subdivision_cod": "2", "group_name": "4562"}
     var subjects = client.getContent($url).parseJson().json_to_subject()
-    # for subject in subjects:
-        # echo $subject
 
-    subjects.grouping_subjects_by_days().print_schedule
+    echo subjects.grouping_subjects_by_days() #.print_schedule
     echo "Нажми enter что бы закрыть окно"
     discard readLine(stdin)
     

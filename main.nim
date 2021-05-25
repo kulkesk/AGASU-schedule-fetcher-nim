@@ -3,24 +3,24 @@ import json
 import uri
 import strformat
 import tables, hashes
+import times
 from strutils import parseInt, repeat, center
 from unicode import runeLen
-import times
 
 type 
   Subject* = object
-    date: DateTime
-    week_number: int
-    week_day: string
-    pair: int
-    signature: string
-    sub_group: string
-    classroom: string
-    classroom_building: string
-    subject: string
-    prim: string
-    study_type: string
-    group_name: string
+    date*: DateTime
+    week_number*: int
+    week_day*: string
+    pair*: int
+    signature*: string
+    sub_group*: string
+    classroom*: string
+    classroom_building*: string
+    subject*: string
+    prim*: string
+    study_type*: string
+    group_name*: string
 
   # Schedule* = Table[DateTime, seq[Subject]]
 
@@ -51,8 +51,8 @@ proc `$`*(s: Subject): string=
 
 func remove_extra_spaces*(s:string): string =
   ##[
-      Usefull for deleting extra spaces that goes one after another
-      returns string without extra spaces
+    Usefull for deleting extra spaces that goes one after another
+    returns string without extra spaces
   ]##
   if s.len == 0: return ""
   var new_s = newStringOfCap(s.len)
@@ -76,18 +76,17 @@ func hash*(v: DateTime): Hash =
   # debugEcho result
 
 
-func grouping_subjects_by_days*(subjects: seq[Subject]): Table[DateTime, seq[Subject]]=
+func grouping_subjects_by_days*(subjects: seq[Subject]): OrderedTable[DateTime, seq[Subject]]=
   ##[
-      Groups subjects by their respective days, as they should be send to begin with
+    Groups subjects by their respective days, as they should be send to begin with
   ]##
-  result  = initTable[DateTime, seq[Subject]]()
   for subject in subjects:
     result.mgetOrPut(subject.date, @[]).add(subject)
 
 
-proc print_schedule*(schedule:Table[DateTime, seq[Subject]])=
+proc print_schedule*(schedule:OrderedTable[DateTime, seq[Subject]])=
   ##[
-      Prints schedule in human readable form
+    Prints schedule in human readable form
   ]##
 
   var sep_between_days = "="
@@ -136,7 +135,7 @@ proc print_schedule*(schedule:Table[DateTime, seq[Subject]])=
 
 proc json_to_subject*(json_subjects:JsonNode): seq[Subject] =
   ##[
-      magically turn json response from server to a normal list of objects that represents data
+    magically turn json response from server to a normal list of objects that represents data
   ]##
   result = newSeqOfCap[Subject](json_subjects.len)
   for json_subject in json_subjects:

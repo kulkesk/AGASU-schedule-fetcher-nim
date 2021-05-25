@@ -24,6 +24,7 @@ task build, "builds binary":
     switch "o", target
     switch "nimcache", cache
     switch "gc", "arc"
+    switch "app", "console"
 
 task clean_cache, "cleans cache":
     hint("Conf", false)

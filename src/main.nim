@@ -84,6 +84,12 @@ func grouping_subjects_by_days*(subjects: seq[Subject]): OrderedTable[DateTime, 
     result.mgetOrPut(subject.date, @[]).add(subject)
 
 
+proc get_data_from_server(path: string, options:openArray[(string, string)]):JsonNode =
+  var client = newHttpClient()
+  let url = parseUri("https://api.xn--80aai1dk.xn--p1ai/api/") / path ? options
+  client.getContent($url).parseJson()
+
+
 proc print_schedule*(schedule:OrderedTable[DateTime, seq[Subject]])=
   ##[
     Prints schedule in human readable form
@@ -157,10 +163,7 @@ proc json_to_subject*(json_subjects:JsonNode): seq[Subject] =
 
 
 proc main()=
-  var client = newHttpClient()
-  var url = parseUri("https://api.xn--80aai1dk.xn--p1ai/api/") / "schedule" ?
-                    {"range": "3", "subdivision_cod": "2", "group_name": "4562"}
-  var subjects = client.getContent($url).parseJson().json_to_subject()
+  var subjects = get_data_from_server("schedule", {"range": "3", "subdivision_cod": "2", "group_name": "4562"}).json_to_subject()
 
   subjects.grouping_subjects_by_days().print_schedule
   echo "Нажми enter что бы закрыть окно"

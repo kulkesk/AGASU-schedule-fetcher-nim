@@ -163,7 +163,7 @@ proc json_to_subject*(json_subjects:JsonNode): seq[Subject] =
 
 
 proc main()=
-  var subjects = get_data_from_server("schedule", {"range": "3", "subdivision_cod": "2", "group_name": "4562"}).json_to_subject()
+  let subjects = get_data_from_server("schedule", {"range": "3", "subdivision_cod": "2", "group_name": "4562"}).json_to_subject()
 
   subjects.grouping_subjects_by_days().print_schedule
   echo "Нажми enter что бы закрыть окно"

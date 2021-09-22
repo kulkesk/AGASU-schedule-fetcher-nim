@@ -21,10 +21,9 @@ let
 type SourceDirectoryError = object of CatchableError
 
 proc create_needed_directories() =
-  let directories: array[0..4, string] = [
+  let directories: array[0..3, string] = [
     TargetDirectoryDebug, TargetDirectoryRelease,
-    CacheDirectoryDebug, CacheDirectoryRelease,
-    ProjectDirectory/"test"
+    CacheDirectoryDebug, CacheDirectoryRelease
   ]
   if not dirExists(SourceDirectory):
     raise newException(SourceDirectoryError, fmt"Source directory ({SourceDirectory}) is abscent")

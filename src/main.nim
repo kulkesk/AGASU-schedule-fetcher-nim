@@ -49,6 +49,10 @@ proc `$`*(s: Subject): string=
   return new_s
 
 
+proc get_list_of_options(get_list_of_subdivisions=false, groups_in_sibdivision_under_id: int= -1)=
+  discard
+
+
 func remove_extra_spaces*(s:string): string =
   ##[
     Usefull for deleting extra spaces that goes one after another

@@ -49,10 +49,6 @@ proc `$`*(s: Subject): string=
   return new_s
 
 
-proc get_list_of_options(get_list_of_subdivisions=false, groups_in_sibdivision_under_id: int= -1)=
-  discard
-
-
 func remove_extra_spaces*(s:string): string =
   ##[
     Usefull for deleting extra spaces that goes one after another
@@ -88,10 +84,27 @@ func grouping_subjects_by_days*(subjects: seq[Subject]): OrderedTable[DateTime, 
     result.mgetOrPut(subject.date, @[]).add(subject)
 
 
-proc get_data_from_server(path: string, options:openArray[(string, string)]):JsonNode =
+proc get_data_from_server(path: string, options:openArray[(string, string)] = []):JsonNode =
   var client = newHttpClient()
-  let url = parseUri("https://api.xn--80aai1dk.xn--p1ai/api/") / path ? options
+  var url: Uri
+  url = parseUri("https://api.xn--80aai1dk.xn--p1ai/api/") / path ? options
+  # if options.high > 0:
+  #   url = parseUri("https://api.xn--80aai1dk.xn--p1ai/api/") / path ? options
+  # else:
+  #   url = parseUri("https://api.xn--80aai1dk.xn--p1ai/api/") / path
   client.getContent($url).parseJson()
+
+
+proc get_list_of_subdivisions*(): Table[string, int]=
+  var answer = get_data_from_server("subdivisions")
+  for id_and_title in answer:
+    result[remove_extra_spaces(id_and_title["title"].getStr)] = id_and_title["id"].getInt
+
+
+proc get_list_of_groups*(subdivision_id: int): Table[string, int]=
+  var answer = get_data_from_server("groups", {"subdivision_cod": $subdivision_id})
+  for id_and_title in answer:
+    result[remove_extra_spaces(id_and_title["title"].getStr)] = id_and_title["id"].getInt
 
 
 proc print_schedule*(schedule:OrderedTable[DateTime, seq[Subject]])=
@@ -167,9 +180,11 @@ proc json_to_subject*(json_subjects:JsonNode): seq[Subject] =
 
 
 proc main()=
-  let subjects = get_data_from_server("schedule", {"range": "3", "subdivision_cod": "2", "group_name": "4562"}).json_to_subject()
+  let subjects = get_data_from_server("schedule", {"range": "3", "subdivision_cod": "2", "group_name": "4775"}).json_to_subject()
 
   subjects.grouping_subjects_by_days().print_schedule
+  debugEcho get_list_of_subdivisions()
+  debugEcho get_list_of_groups(101)
   echo "Нажми enter что бы закрыть окно"
   discard readLine(stdin)
 

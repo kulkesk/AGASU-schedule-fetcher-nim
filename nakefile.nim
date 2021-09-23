@@ -5,7 +5,7 @@ import std/[os,
 import nake
 
 let
-  Arguments = "--gc:orc --passL:-static -d:ssl"
+  Arguments = "--gc:orc -d:ssl"
   ProjectDirectory = getAppDir()
   TargetDirectory = ProjectDirectory/"target"
   SourceDirectory = ProjectDirectory/"src"

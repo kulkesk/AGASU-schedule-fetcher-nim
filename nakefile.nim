@@ -68,7 +68,7 @@ task "check-dep", "checks dependencies and installs if needed":
 proc build(release:bool=true, check_if_needs_refresh:bool=false) =
   var target_directory = if release: TargetDirectoryRelease else: TargetDirectoryDebug
   var cache_directory = if release: CacheDirectoryRelease else: CacheDirectoryDebug
-  var comp_mode = if release: "release --opt:speed" else: "debug"
+  var comp_mode = if release: "release --opt:speed" else: "debug --debugger:native"
   create_needed_directories()
   runTask("check-dep")
   if needsRefresh(target_directory/"main", SourceFile) or not check_if_needs_refresh:

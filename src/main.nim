@@ -88,10 +88,6 @@ proc get_data_from_server(path: string, options:openArray[(string, string)] = []
   var client = newHttpClient()
   var url: Uri
   url = parseUri("https://api.xn--80aai1dk.xn--p1ai/api/") / path ? options
-  # if options.high > 0:
-  #   url = parseUri("https://api.xn--80aai1dk.xn--p1ai/api/") / path ? options
-  # else:
-  #   url = parseUri("https://api.xn--80aai1dk.xn--p1ai/api/") / path
   client.getContent($url).parseJson()
 
 
@@ -184,7 +180,7 @@ proc main()=
 
   subjects.grouping_subjects_by_days().print_schedule
   debugEcho get_list_of_subdivisions()
-  debugEcho get_list_of_groups(101)
+  debugEcho get_list_of_groups(2)
   echo "Нажми enter что бы закрыть окно"
   discard readLine(stdin)
 
